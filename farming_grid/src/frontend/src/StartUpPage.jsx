@@ -1,7 +1,20 @@
 import { StrictMode } from 'react'
+import { useNavigate } from 'react-router-dom';
+import './index.css'
 // import './LandingPage.css'
 const StartUpPage = () => {
    const background = "/img/13.jpg"; // Correct path for assets in the public folder
+   const navigate = useNavigate();
+   const MyButton = () => {
+	return (
+	  <button className="bg-blue-500 text-white px-4 py-2 rounded">
+		Click Me
+	  </button>
+	);
+  };
+   const InstructionsPage = () => {
+    navigate('/instructions'); 
+    };
     return (
        <div
        style={{
@@ -31,8 +44,8 @@ const StartUpPage = () => {
            gap: '20px', // Add some space between buttons
        }}
        >
-           <button style={{ fontSize: '3rem' }}>Play</button>
-           <button style={{ fontSize: '3rem' }}>Instructions</button>
+           <button button className="bg-blue-500 text-white px-4 py-2 rounded"	 style={{ fontSize: '3rem' }}>Play</button>
+           <button button className="bg-blue-500 text-white px-4 py-2 rounded" style={{ fontSize: '3rem' }}  onClick={InstructionsPage}>Instructions</button>
        </div>
        </div>
    );
