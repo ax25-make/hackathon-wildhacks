@@ -8,12 +8,18 @@ const StartUpPage = () => {
 	  <div
 		style={{
 		  backgroundImage: `url(${background})`,
-		  backgroundSize: 'auto',
-		  height: '100vh'
+		  backgroundSize: 'cover', // Ensures the image covers the entire container
+    	backgroundPosition: 'center', // Centers the image
+    	backgroundAttachment: 'fixed', // Keeps the background fixed during scrolling
+    	height: '100vh', // Full viewport height
+    	width: '100%', // Full width
+		margin: 0,          // Remove any default margin
+    padding: 0,         // Remove any default padding
+    border: 'none',     // Ensure no border is applied
 		  
 		}}
 	  >
-		<h1>Welcome to My Page</h1>
+		<h1 style={{textAlign: 'center', fontSize : '4rem'}}>Welcome to My Page</h1>
 	  </div>
 	);
   };
