@@ -13,11 +13,16 @@ class Game:
         self.timer = Timer()
         self.plant_data = PLANT_DATA
         self.money = 100  #Starting money
+        self.turns_per_day = 3  # Number of actions allowed per day
+        self.remaining_turns = self.turns_per_day
+        self.stock = {plant_type: 0 for plant_type in PLANT_DATA} # Initialize stock
 
     def run(self):
         while True:
             self.grid.display()
             print(f"Day: {self.timer.day}, Season: {self.timer.season}, Money: ${self.money:.2f}")
+            print(f"Remaining turns: {self.remaining_turns}")
+            self.display_stock()
             self.display_player_actions()
             action = input("What do you want to do? ").lower()
 
@@ -29,6 +34,8 @@ class Game:
                 self.fertilize_prompt()
             elif action == 'check':
                 self.check_prompt()
+            elif action == 'harvest':
+                self.harvest_prompt()
             elif action == 'advance':
                 self.advance_time()
             elif action == 'sell':
@@ -39,10 +46,18 @@ class Game:
             else:
                 print("Invalid action.")
 
-            time.sleep(0.1)  # Optional:  Reduce CPU usage
+            if self.remaining_turns == 0:
+                self.advance_time()
+                self.remaining_turns = self.turns_per_day
 
     def display_player_actions(self):
-        print("Available actions: Plant, Water, Fertilize, Check, Advance, Sell, Exit")
+        print("Available actions: Plant, Water, Fertilize, Check, Harvest, Advance, Sell, Stock, Exit")
+    
+    def display_stock(self):
+        print("--- Stock ---")
+        for plant_type, quantity in self.stock.items():
+            print(f"{plant_type}: {quantity}")
+        print("-------------")
 
     def plant_prompt(self):
         try:
@@ -66,6 +81,7 @@ class Game:
 
         if self.grid.plant(x, y, plant):
             print(f"Planted {plant_type} at ({x}, {y}).")
+            self.remaining_turns -= 1
         else:
             print("Cannot plant here.")
 
@@ -84,7 +100,9 @@ class Game:
         cell = self.grid.get_cell(x, y)
         if cell and cell.plant:
             cell.plant.water()
+            #water(self)
             print(f"Watered plant at ({x}, {y})")
+            self.remaining_turns -= 1
         else:
             print("No plant to water at this location.")
 
@@ -104,6 +122,8 @@ class Game:
         if cell and cell.plant:
             cell.plant.fertilize()
             print(f"Fertilized plant at ({x}, {y})")
+            self.remaining_turns -= 1
+            #fertilize(self)
         else:
             print("No plant to fertilize at this location.")
 
@@ -122,6 +142,7 @@ class Game:
         cell = self.grid.get_cell(x, y)
         if cell and cell.plant:
             print(cell.plant.status())
+            self.remaining_turns -= 1
         else:
             print("No plant at this location.")
 
@@ -130,11 +151,37 @@ class Game:
         self.grid.tick(self.timer.season)
         print(f"Advanced to day {self.timer.day}, Season: {self.timer.season}")
         self.economy.simulate_market(self.timer.season)
+        self.remaining_turns = self.turns_per_day
+
+    def harvest_prompt(self):
+        if self.remaining_turns <= 0:
+            print("No turns left for today. Advance to the next day.")
+            return
+
+        harvested_count = 0
+        for y in range(self.grid.height):
+            for x in range(self.grid.width):
+                cell = self.grid.get_cell(x, y)
+                if cell and cell.plant and cell.plant.growth_stage == 'mature':
+                    plant = cell.plant
+                    self.stock[plant.name] += 1  # Increase stock
+                    self.grid.grid[y][x] = None  # Clear the cell
+                    harvested_count += 1
+
+        if harvested_count > 0:
+            print(f"Harvested {harvested_count} crops.")
+            self.remaining_turns -= 1
+        else:
+            print("No mature crops to harvest.")
 
     def sell_prompt(self):
         plant_type = input(f"Select plant to sell ({', '.join(self.plant_data.keys())}): ")
         if plant_type not in self.plant_data:
             print("Invalid plant type.")
+            return
+
+        if self.stock[plant_type] <= 0:
+            print(f"You have no {plant_type} in stock to sell.")
             return
 
         try:
@@ -143,9 +190,14 @@ class Game:
             print("Invalid input. Please enter a number.")
             return
 
+        if quantity > self.stock[plant_type]:
+            print(f"You only have {self.stock[plant_type]} {plant_type} in stock.")
+            return
+
         price = self.economy.get_market_price(plant_type)
         revenue = price * quantity
         self.money += revenue
+        self.stock[plant_type] -= quantity #Decrease stocks here
         print(f"Sold {quantity} {plant_type} for ${revenue:.2f}")
 
 if __name__ == "__main__":
