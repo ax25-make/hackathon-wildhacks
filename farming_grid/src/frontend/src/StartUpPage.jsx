@@ -15,6 +15,11 @@ const StartUpPage = () => {
    const InstructionsPage = () => {
     navigate('/instructions'); 
     };
+
+   const GamePage = () => {
+      navigate('/game');
+    };
+
     return (
        <div
        style={{
@@ -44,7 +49,7 @@ const StartUpPage = () => {
            gap: '20px', // Add some space between buttons
        }}
        >
-           <button button className="bg-blue-500 text-white px-4 py-2 rounded"	 style={{ fontSize: '3rem' }}>Play</button>
+           <button button className="bg-blue-500 text-white px-4 py-2 rounded"	 style={{ fontSize: '3rem' }} onClick={GamePage}>Play</button>
            <button button className="bg-blue-500 text-white px-4 py-2 rounded" style={{ fontSize: '3rem' }}  onClick={InstructionsPage}>Instructions</button>
        </div>
        </div>
