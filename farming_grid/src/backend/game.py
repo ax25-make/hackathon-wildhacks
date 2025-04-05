@@ -84,6 +84,7 @@ class Game:
         cell = self.grid.get_cell(x, y)
         if cell and cell.plant:
             cell.plant.water()
+            #water(self)
             print(f"Watered plant at ({x}, {y})")
         else:
             print("No plant to water at this location.")
@@ -104,6 +105,7 @@ class Game:
         if cell and cell.plant:
             cell.plant.fertilize()
             print(f"Fertilized plant at ({x}, {y})")
+            #fertilize(self)
         else:
             print("No plant to fertilize at this location.")
 
