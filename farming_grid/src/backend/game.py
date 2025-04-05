@@ -50,7 +50,7 @@ class Game:
                 self.remaining_turns = self.turns_per_day
 
     def display_player_actions(self):
-        print("Available actions: Plant, Water, Fertilize, Check, Harvest, Advance, Sell, Stock, Exit")
+        print("Available actions: Plant, Water, Fertilize, Check, Harvest, Advance, Sell, Exit")
     
     def display_stock(self):
         print("--- Stock ---")
