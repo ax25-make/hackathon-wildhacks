@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import StartUpPage from './StartUpPage.jsx';
 import Instructions from './Instruction.jsx';
+import FarmPage from './FarmPage.jsx';
 
 
 // Routes to navigate between pages - App holds all my routes and / is the default path
@@ -12,6 +13,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<StartUpPage/>}/>
 		<Route path="/instructions" element = {<Instructions/>}/>
+		<Route path = "/FarmPage" element = {<FarmPage/>}/>
       </Routes>
     </BrowserRouter>
   );

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './index.css'
 // import './LandingPage.css'
 const StartUpPage = () => {
-   const background = "/img/13.jpg"; // Correct path for assets in the public folder
+   const background = "/img/farm.png"; // Correct path for assets in the public folder
    const navigate = useNavigate();
    const MyButton = () => {
 	return (
@@ -12,9 +12,12 @@ const StartUpPage = () => {
 	  </button>
 	);
   };
-   const InstructionsPage = () => {
+	const InstructionsPage = () => {
     navigate('/instructions'); 
     };
+	const FarmingPage = () => {
+		navigate('./FarmPage');
+	};
     return (
        <div
        style={{
@@ -36,7 +39,7 @@ const StartUpPage = () => {
            flexDirection: 'column', // Stacks the h1 and button vertically
        }}
        >
-       <h1 style={{ textAlign: 'center', fontSize: '4rem' }}>AI Farming Simulator 🐶🐱🐭🐹</h1>
+       <h1 style={{ textAlign: 'center', fontSize: '4rem', color: "white"}}>AI Farming Simulator</h1>
        <div
        style={{
            display: 'flex',
@@ -44,7 +47,7 @@ const StartUpPage = () => {
            gap: '20px', // Add some space between buttons
        }}
        >
-           <button button className="bg-blue-500 text-white px-4 py-2 rounded"	 style={{ fontSize: '3rem' }}>Play</button>
+           <button button className="bg-blue-500 text-white px-4 py-2 rounded"	 style={{ fontSize: '3rem' }}onClick={FarmingPage}>Play</button>
            <button button className="bg-blue-500 text-white px-4 py-2 rounded" style={{ fontSize: '3rem' }}  onClick={InstructionsPage}>Instructions</button>
        </div>
        </div>
