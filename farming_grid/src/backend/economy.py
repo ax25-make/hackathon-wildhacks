@@ -1,9 +1,8 @@
 import os
-from interface import GeminiInterface
+import interface
 
-class Economy:
+class Economy():
     def __init__(self):
-        self.gemini = GeminiInterface()
         self.market_prices = {
             "Wheat": 2.0,
             "Beans": 5.0,
@@ -13,7 +12,7 @@ class Economy:
 
     def simulate_market(self, season):
         input_prompt = f"Simulate the market prices for Wheat, Beans, Potatoes, and Corn for the {season} season.  Provide a table of updated market prices. Include the following columns: Plant, Price. Format as CSV"
-        response = self.gemini.generate_content(input_prompt)
+        response = interface.generate_content(interface.chat, input_prompt)
 
         if response:
             self.parse_gemini_output(response)
