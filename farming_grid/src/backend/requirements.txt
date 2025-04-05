@@ -1,0 +1,6 @@
+flask
+requests
+google-genai
+dotenv
+flask-cors
+json
