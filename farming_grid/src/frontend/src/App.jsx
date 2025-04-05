@@ -1,17 +1,15 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import StartUpPage from './StartUpPage.jsx';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Routes to navigate between pages - App holds all my routes and / is the default path
+// So when I go to localhost:/ landing page is the first component that comes up 
 
+export default function App() {
   return (
-    <div>
-		<p>Hello</p>
-		<p>Hello</p>
-	</div>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<StartUpPage/>}/>
+      </Routes>
+    </BrowserRouter>
+  );
 }
-
-export default App
