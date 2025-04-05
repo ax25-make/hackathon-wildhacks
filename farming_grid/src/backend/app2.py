@@ -5,7 +5,6 @@ import re
 import json
 from google import genai
 
-
 load_dotenv()
 
 # API keys
@@ -20,12 +19,7 @@ plantation = ""
 grid_size = 8
 
 # - Defining the character model and states
-class Character:
-    def __init__(self):
-        self.conversation_history = []
-        self.questions_remaining = 20
-
-character = Character()
+conversation_history = []
 
 # - Initiate the client
 client_1 = genai.Client(api_key=API_KEY_1)
@@ -35,6 +29,7 @@ client = client_1
 # - Set the model name
 MODEL_NAME = "gemini-2.0-flash"
 
+# - Generate grid
 def initial_game():
     global plantation
     plantation = "Plantation"
@@ -57,9 +52,10 @@ def initial_game():
 
     return initial_grid
 
+# add plant - look up plant in files ## add later
 def create_plant(plant_type="Wheat"):
     return {
-        "type": "plant",  # Add a type for distinction
+        "type": "plant",  
         "plant_type": plant_type,
         "growth_stage": "planting",
         "health": 100,
@@ -82,16 +78,16 @@ def grid_to_string(game_state):
         grid_str += "\n"
     return grid_str
 
-def get_gemini_response(user_query, game_state, character, client):
+def get_gemini_response(user_query, game_state, history, client):
     """Gets a response from Gemini, managing conversation history and client rotation."""
 
     grid_string = grid_to_string(game_state)  # Get the current farm state
 
-    conversation_context = character.conversation_history[:]  # Copy history
+    conversation_context = history[:]
     # conversation_context = [{"role": "system", "parts": [{"text": f"You are a helpful assistant helping a user manage their farm." + grid_string}]}]
     # Adding the current grid to the system prompt
-    conversation_context.extend(character.conversation_history)
-    conversation_context.append({"role": "user", "parts": [{"text": user_query + grid_string}]})  # Changed to user_query
+    conversation_context.extend(history)
+    conversation_context.append({"role": "user", "parts": [{"text": user_query + grid_string}]})
     try:
         response = client.models.generate_content(
             model=MODEL_NAME,
@@ -99,14 +95,13 @@ def get_gemini_response(user_query, game_state, character, client):
         )
         client = client_2 if client == client_1 else client_1  # Alternate the client for the next call
 
-        gemini_response = response.text.strip() # Changed as well
+        gemini_response = response.text.strip()
         print(f"gemini_response: {gemini_response}")
         # Update conversation history and reduce questions
-        character.conversation_history.append({"role": "user", "parts": [{"text": user_query}]})
-        character.conversation_history.append({"role": "model", "parts": [{"text": gemini_response}]})
-        character.questions_remaining -= 1
+        history.append({"role": "user", "parts": [{"text": user_query}]})
+        history.append({"role": "model", "parts": [{"text": gemini_response}]})
 
-        return gemini_response
+        return gemini_response, history
 
     except Exception as e:
         print(f"Error generating response: {e}")
@@ -116,22 +111,19 @@ def get_gemini_response(user_query, game_state, character, client):
 def main():
     global client
     game_state = initial_game()
+    history = []
 
     while True:
         grid_string = grid_to_string(game_state)
         print("\nFarm State:\n" + grid_string)
 
-        user_input = input(f"Enter your command (Questions remaining: {character.questions_remaining} or type 'exit'): ")
+        user_input = input(f"Enter your command (type 'exit'): ")
 
         if user_input.lower() == "exit":
             print("Exiting.")
             break
 
-        if character.questions_remaining <= 0:
-            print("Sorry, you have no questions remaining.")
-            break
-
-        gemini_response = get_gemini_response(user_input, game_state, character, client) # Passing client
+        gemini_response, history = get_gemini_response(user_input, game_state, history, client) # Passing client
 
         print(f"Gemini's Response: {gemini_response}")
 
