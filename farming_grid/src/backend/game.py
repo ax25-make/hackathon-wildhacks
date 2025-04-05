@@ -1,5 +1,4 @@
 import os
-import time
 from grid import Grid
 from plant import Plant
 from economy import Economy
