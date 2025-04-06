@@ -9,7 +9,7 @@ class Economy():
     def simulate_market(self, season):
         plant_names = ", ".join(PLANT_DATA.keys())
         input_prompt = f"Simulate the market prices for {plant_names} for the {season} season. Provide a table of updated market prices. Include the following columns: Plant, Price. Format as CSV"
-        response = interface.generate_content(interface.chat, input_prompt)
+        response = interface.make_content(model="gemini-2.0-flash", prompt=input_prompt)
 
         if response:
             self.parse_gemini_output(response)
