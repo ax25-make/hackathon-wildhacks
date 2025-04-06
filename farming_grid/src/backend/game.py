@@ -124,6 +124,7 @@ class Game:
         if not (0 <= x <= 7 and 0 <= y <= 7):
             print("Invalid coordinates.")
             return
+        
 
         cell = self.grid.get_cell(x, y)
         if cell and cell.plant:
@@ -183,10 +184,6 @@ class Game:
         self.remaining_turns = self.turns_per_day
 
     def harvest_prompt(self):
-        if self.remaining_turns <= 0:
-            print("No turns left for today. Advance to the next day.")
-            return
-
         harvested_count = 0
         for y in range(self.grid.height):
             for x in range(self.grid.width):
@@ -206,6 +203,17 @@ class Game:
 
     def sell_prompt(self):
         plant_type = input(f"Select plant to sell ({', '.join(self.plant_data.keys())}): ")
+        plant_type_lower = plant_type.lower() # put user input to lowercase
+        
+        #Create a dictionary of plant lowercase values with its normal casing
+        plant_data_lower = {k.lower(): k for k in self.plant_data.keys()}
+
+        if plant_type_lower not in plant_data_lower:
+            print("Invalid plant type.")
+            return
+
+        # Set plant_type with its uppercase version
+        plant_type = plant_data_lower[plant_type_lower]
         if plant_type not in self.plant_data:
             print("Invalid plant type.")
             return
@@ -234,6 +242,16 @@ class Game:
 
     def buy_prompt(self):
         plant_type = input(f"Select plant to buy seeds for ({', '.join(self.plant_data.keys())}): ")
+        plant_type_lower = plant_type.lower() # put user input to lowercase
+        
+        #Create a dictionary of plant lowercase values with its normal casing
+        plant_data_lower = {k.lower(): k for k in self.plant_data.keys()}
+        if plant_type_lower not in plant_data_lower:
+            print("Invalid plant type.")
+            return
+
+        # Set plant_type with its uppercase version
+        plant_type = plant_data_lower[plant_type_lower]
         if plant_type not in self.plant_data:
             print("Invalid plant type.")
             return
