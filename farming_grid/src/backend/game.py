@@ -86,9 +86,17 @@ class Game:
             return
 
         plant_type = input(f"Select a plant to plant ({', '.join(self.plant_data.keys())}): ")
-        if plant_type not in self.plant_data:
+        plant_type_lower = plant_type.lower() # put user input to lowercase
+        
+        #Create a dictionary of plant lowercase values with its normal casing
+        plant_data_lower = {k.lower(): k for k in self.plant_data.keys()}
+
+        if plant_type_lower not in plant_data_lower:
             print("Invalid plant type.")
             return
+
+        # Set plant_type with its uppercase version
+        plant_type = plant_data_lower[plant_type_lower]
 
         if self.seeds[plant_type] <= 0:
             print(f"You don't have enough {plant_type} seeds to plant.")
