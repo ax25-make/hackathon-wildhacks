@@ -15,7 +15,7 @@ class Plant:
 
         self.days_grown += 1
         if self.growth_stage == 'planting':
-            if self.days_grown > 10:
+            if self.days_grown > 3:
                 self.growth_stage = 'growing'
         elif self.growth_stage == 'growing':
             if self.days_grown >= self.growth_cycle[1]: # Use upper bound of growth cycle
