@@ -24,6 +24,7 @@ class Game:
             self.grid.display()
             print(f"Day: {self.timer.day}, Season: {self.timer.season}, Money: ${self.money:.2f}")
             print(f"Remaining turns: {self.remaining_turns}")
+            self.display_market_prices()
             self.display_stock()
             self.display_player_actions()
             action = input("What do you want to do? ").lower()
@@ -54,9 +55,12 @@ class Game:
                 self.advance_time()
                 self.remaining_turns = self.turns_per_day
 
-    def display_player_actions(self):
-        print("Available actions: Plant, Water, Fertilize, Check, Harvest, Advance, Buy, Sell, Exit")
-    
+    def display_market_prices(self):
+        print("--- Market Prices ---")
+        for plant_type, price in self.economy.market_prices.items():
+            print(f"{plant_type}: ${price:.2f}")
+        print("---------------------")
+
     def display_stock(self):
         print("--- Stock ---")
         for plant_type, quantity in self.stock.items():
@@ -65,6 +69,9 @@ class Game:
         for plant_type, quantity in self.seeds.items():
             print(f"{plant_type}: {quantity}")
         print("-------------")
+
+    def display_player_actions(self):
+        print("Available actions: Plant, Water, Fertilize, Check, Harvest, Advance, Buy, Sell, Exit")
 
     def plant_prompt(self):
         try:
@@ -216,7 +223,7 @@ class Game:
         print(f"Sold {quantity} {plant_type} for ${revenue:.2f}")
         self.remaining_turns -= 1
         self.money -= self.action_cost
-        
+
     def buy_prompt(self):
         plant_type = input(f"Select plant to buy seeds for ({', '.join(self.plant_data.keys())}): ")
         if plant_type not in self.plant_data:

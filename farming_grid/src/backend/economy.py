@@ -1,17 +1,14 @@
 import os
 import interface
+from data import PLANT_DATA
 
 class Economy():
     def __init__(self):
-        self.market_prices = {
-            "Wheat": 2.0,
-            "Beans": 5.0,
-            "Potatoes": 3.0,
-            "Corn": 4.0
-        }
+        self.market_prices = {plant_type: 2.0 for plant_type in PLANT_DATA}
 
     def simulate_market(self, season):
-        input_prompt = f"Simulate the market prices for Wheat, Beans, Potatoes, and Corn for the {season} season.  Provide a table of updated market prices. Include the following columns: Plant, Price. Format as CSV"
+        plant_names = ", ".join(PLANT_DATA.keys())
+        input_prompt = f"Simulate the market prices for {plant_names} for the {season} season. Provide a table of updated market prices. Include the following columns: Plant, Price. Format as CSV"
         response = interface.generate_content(interface.chat, input_prompt)
 
         if response:
@@ -25,7 +22,7 @@ class Economy():
             parts = line.split(',')
             if len(parts) == 2:
                 plant, price = parts[0].strip(), parts[1].strip()
-                if plant == "Plant":  # Skip header
+                if plant == "Plant":  
                     continue
                 try:
                     self.market_prices[plant] = float(price)
