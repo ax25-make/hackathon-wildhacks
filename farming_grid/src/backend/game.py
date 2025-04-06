@@ -15,6 +15,9 @@ class Game:
         self.turns_per_day = 3  # Number of actions allowed per day
         self.remaining_turns = self.turns_per_day
         self.stock = {plant_type: 0 for plant_type in PLANT_DATA} # Initialize stock
+        self.seeds = {plant_type: 5 for plant_type in PLANT_DATA} # Initial seed stock
+        self.seed_price_multiplier = 0.25 # Seed prices = crop price * this
+        self.action_cost = 0.1 #Cost in money per action
 
     def run(self):
         while True:
@@ -37,6 +40,8 @@ class Game:
                 self.harvest_prompt()
             elif action == 'advance':
                 self.advance_time()
+            elif action == 'buy':
+                self.buy_prompt()
             elif action == 'sell':
                 self.sell_prompt()
             elif action == 'exit':
@@ -50,11 +55,14 @@ class Game:
                 self.remaining_turns = self.turns_per_day
 
     def display_player_actions(self):
-        print("Available actions: Plant, Water, Fertilize, Check, Harvest, Advance, Sell, Exit")
+        print("Available actions: Plant, Water, Fertilize, Check, Harvest, Advance, Buy, Sell, Exit")
     
     def display_stock(self):
         print("--- Stock ---")
         for plant_type, quantity in self.stock.items():
+            print(f"{plant_type}: {quantity}")
+        print("--- Seeds ---")
+        for plant_type, quantity in self.seeds.items():
             print(f"{plant_type}: {quantity}")
         print("-------------")
 
@@ -75,12 +83,18 @@ class Game:
             print("Invalid plant type.")
             return
 
+        if self.seeds[plant_type] <= 0:
+            print(f"You don't have enough {plant_type} seeds to plant.")
+            return
+
         plant_data = self.plant_data[plant_type]
         plant = Plant(plant_type, plant_data)
 
         if self.grid.plant(x, y, plant):
             print(f"Planted {plant_type} at ({x}, {y}).")
+            self.seeds[plant_type] -= 1
             self.remaining_turns -= 1
+            self.money -= self.action_cost
         else:
             print("Cannot plant here.")
 
@@ -99,9 +113,9 @@ class Game:
         cell = self.grid.get_cell(x, y)
         if cell and cell.plant:
             cell.plant.water()
-            #water(self)
             print(f"Watered plant at ({x}, {y})")
             self.remaining_turns -= 1
+            self.money -= self.action_cost
         else:
             print("No plant to water at this location.")
 
@@ -122,7 +136,7 @@ class Game:
             cell.plant.fertilize()
             print(f"Fertilized plant at ({x}, {y})")
             self.remaining_turns -= 1
-            #fertilize(self)
+            self.money -= self.action_cost
         else:
             print("No plant to fertilize at this location.")
 
@@ -142,6 +156,7 @@ class Game:
         if cell and cell.plant:
             print(cell.plant.status())
             self.remaining_turns -= 1
+            self.money -= self.action_cost
         else:
             print("No plant at this location.")
 
@@ -170,6 +185,7 @@ class Game:
         if harvested_count > 0:
             print(f"Harvested {harvested_count} crops.")
             self.remaining_turns -= 1
+            self.money -= self.action_cost
         else:
             print("No mature crops to harvest.")
 
@@ -198,6 +214,33 @@ class Game:
         self.money += revenue
         self.stock[plant_type] -= quantity #Decrease stocks here
         print(f"Sold {quantity} {plant_type} for ${revenue:.2f}")
+        self.remaining_turns -= 1
+        self.money -= self.action_cost
+        
+    def buy_prompt(self):
+        plant_type = input(f"Select plant to buy seeds for ({', '.join(self.plant_data.keys())}): ")
+        if plant_type not in self.plant_data:
+            print("Invalid plant type.")
+            return
+
+        try:
+            quantity = int(input("Enter quantity of seeds to buy: "))
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+            return
+
+        seed_price = self.economy.get_market_price(plant_type) * self.seed_price_multiplier  #Seed prices will now be related to plant price
+        cost = seed_price * quantity
+
+        if self.money < cost:
+            print("Not enough money to buy that many seeds.")
+            return
+
+        self.money -= cost
+        self.seeds[plant_type] += quantity
+        print(f"Bought {quantity} {plant_type} seeds for ${cost:.2f}")
+        self.remaining_turns -= 1
+        self.money -= self.action_cost
 
 if __name__ == "__main__":
     game = Game()
